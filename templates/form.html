@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Маршрутная погода</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .error {
+            color: red;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        function validateForm() {
+            let isValid = true;
+            let errorMessage = '';
+            const regex = /^-?\d+(\.\d{1,4})?$/; // Регулярное выражение для проверки float с 4 знаками после точки
+
+            const startLon = document.getElementById('start_lon').value;
+            const startLat = document.getElementById('start_lat').value;
+            const endLon = document.getElementById('end_lon').value;
+            const endLat = document.getElementById('end_lat').value;
+
+            if (!regex.test(startLon)) {
+                errorMessage += 'Начальная долгота должна быть числом с не более чем 4 знаками после точки.<br>';
+                isValid = false;
+            }
+            if (!regex.test(startLat)) {
+                errorMessage += 'Начальная широта должна быть числом с не более чем 4 знаками после точки.<br>';
+                isValid = false;
+            }
+            if (!regex.test(endLon)) {
+                errorMessage += 'Конечная долгота должна быть числом с не более чем 4 знаками после точки.<br>';
+                isValid = false;
+            }
+            if (!regex.test(endLat)) {
+                errorMessage += 'Конечная широта должна быть числом с не более чем 4 знаками после точки.<br>';
+                isValid = false;
+            }
+
+            // Показываем ошибки или отправляем форму
+            const errorDiv = document.getElementById('error-message');
+            if (!isValid) {
+                errorDiv.innerHTML = errorMessage;
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+
+            return isValid;
+        }
+    </script>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Введите начальные и конечные координаты</h2>
+
+        <!-- Серверные сообщения об ошибках -->
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <div id="error-message" class="error" style="display: none;"></div>
+        <form action="/process" method="POST" onsubmit="return validateForm();">
+            <label for="start_lon">Начальная точка (долгота):</label>
+            <input type="text" id="start_lon" name="start_lon" placeholder="Например, 37.6173" required>
+
+            <label for="start_lat">Начальная точка (широта):</label>
+            <input type="text" id="start_lat" name="start_lat" placeholder="Например, 55.7558" required>
+
+            <label for="end_lon">Конечная точка (долгота):</label>
+            <input type="text" id="end_lon" name="end_lon" placeholder="Например, 37.6173" required>
+
+            <label for="end_lat">Конечная точка (широта):</label>
+            <input type="text" id="end_lat" name="end_lat" placeholder="Например, 55.7558" required>
+
+            <button type="submit">Узнать погоду</button>
+        </form>
+    </div>
+</body>
+</html>
